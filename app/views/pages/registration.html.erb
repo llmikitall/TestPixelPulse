@@ -1,0 +1,187 @@
+<% content_for :page_title, "Регистрация | Pixel Pulse" %>
+
+            <div class="form-container">
+                <h2>🔴 РЕГИСТРАЦИЯ 🔴</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label>👤 ИМЯ ПОЛЬЗОВАТЕЛЯ</label>
+                        <input type="text" id="regUsername" placeholder="PLAYER1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📧 EMAIL</label>
+                        <input type="email" id="regEmail" placeholder="player@arcade.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🔒 ПАРОЛЬ</label>
+                        <input type="password" id="regPassword" placeholder="******" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🔁 ПОДТВЕРЖДЕНИЕ</label>
+                        <input type="password" id="regConfirm" placeholder="******" required>
+                    </div>
+                    <button type="submit" class="arcade-button">➡ СОЗДАТЬ АККАУНТ</button>
+                    <div class="form-footer">
+                        Уже есть аккаунт? <a href="/login" id="loginMockLink">ВОЙТИ →</a>
+                    </div>
+                </form>
+
+                <!-- Контейнер для анимации Пакмана -->
+                <div class="pacman-canvas-container">
+                    <canvas id="pacmanCanvas" width="400" height="80"></canvas>
+                </div>
+                <div class="success-message" id="successMessage">✅ РЕГИСТРАЦИЯ УСПЕШНА! ✅</div>
+            </div>
+
+    <script>
+        (function() {
+            // ========== 1. АНИМАЦИЯ ПАКМАНА (успешная регистрация) ==========
+            const form = document.getElementById('registerForm');
+            const canvas = document.getElementById('pacmanCanvas');
+            const ctx = canvas.getContext('2d');
+            const successMsgDiv = document.getElementById('successMessage');
+
+            let animationActive = false;
+            let animationFrame = null;
+            let posX = 0;
+            let dots = [];
+            let pacmanMouthAngle = 0;
+            let mouthDirection = 1;
+            let animationCompleted = false;
+            let smileFrame = 0;
+
+            const PACMAN_RADIUS = 20;
+            const DOT_RADIUS = 3;
+            const DOT_COUNT = 12;
+            const START_X = 30;
+            const END_X = canvas.width - 30;
+            const STEP = 2;
+
+            function initDots() {
+                dots = [];
+                const spacing = (canvas.width - 80) / (DOT_COUNT - 1);
+                for (let i = 0; i < DOT_COUNT; i++) {
+                    dots.push({ x: 40 + i * spacing, y: canvas.height / 2, active: true });
+                }
+            }
+
+            function drawPacman(x, y, angle) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.beginPath();
+                ctx.arc(0, 0, PACMAN_RADIUS, angle, 2 * Math.PI - angle);
+                ctx.lineTo(0, 0);
+                ctx.fillStyle = '#ff0';
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function drawSmile(x, y) {
+                ctx.beginPath();
+                ctx.arc(x, y, PACMAN_RADIUS * 0.7, 0.1 * Math.PI, 0.9 * Math.PI, false);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(x - 8, y - 5, 3, 0, 2 * Math.PI);
+                ctx.fillStyle = '#000';
+                ctx.fill();
+            }
+
+            function animatePacman() {
+                if (!animationActive) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let dot of dots) {
+                    if (dot.active) {
+                        ctx.beginPath();
+                        ctx.arc(dot.x, dot.y, DOT_RADIUS, 0, 2 * Math.PI);
+                        ctx.fillStyle = '#fff';
+                        ctx.fill();
+                    }
+                }
+                if (!animationCompleted) {
+                    posX += STEP;
+                    if (posX > END_X) {
+                        posX = END_X;
+                        animationCompleted = true;
+                        for (let dot of dots) dot.active = false;
+                    } else {
+                        for (let dot of dots) {
+                            if (dot.active && Math.abs(dot.x - posX) < PACMAN_RADIUS + DOT_RADIUS) {
+                                dot.active = false;
+                            }
+                        }
+                    }
+                    pacmanMouthAngle += 0.05 * mouthDirection;
+                    if (pacmanMouthAngle > 0.7) mouthDirection = -1;
+                    if (pacmanMouthAngle < 0.2) mouthDirection = 1;
+                    const mouth = 0.2 + pacmanMouthAngle * 0.3;
+                    drawPacman(posX, canvas.height / 2, mouth);
+                } else {
+                    drawPacman(posX, canvas.height / 2, 0.1);
+                    drawSmile(posX, canvas.height / 2);
+                    successMsgDiv.style.display = 'block';
+                    if (smileFrame === 0) {
+                        setTimeout(() => {
+                            cancelAnimationFrame(animationFrame);
+                            animationActive = false;
+                            setTimeout(() => {
+                                
+                                form.reset();
+                                canvas.style.display = 'none';
+                                successMsgDiv.style.display = 'none';
+                            }, 1500);
+                        }, 1500);
+                        smileFrame = 1;
+                    }
+                }
+                if (animationActive) {
+                    animationFrame = requestAnimationFrame(animatePacman);
+                }
+            }
+
+            function startPacmanAnimation() {
+                if (animationActive) return;
+                canvas.style.display = 'block';
+                successMsgDiv.style.display = 'none';
+                posX = START_X;
+                animationCompleted = false;
+                smileFrame = 0;
+                pacmanMouthAngle = 0;
+                mouthDirection = 1;
+                initDots();
+                animationActive = true;
+                animatePacman();
+            }
+
+            // Валидация формы и запуск анимации
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('regUsername').value.trim();
+                const email = document.getElementById('regEmail').value.trim();
+                const password = document.getElementById('regPassword').value;
+                const confirm = document.getElementById('regConfirm').value;
+                if (!username || !email || !password || !confirm) {
+                    alert('❌ Заполните все поля!');
+                    return;
+                }
+                if (password !== confirm) {
+                    alert('❌ Пароли не совпадают!');
+                    return;
+                }
+                if (password.length < 4) {
+                    alert('❌ Пароль должен быть не менее 4 символов!');
+                    return;
+                }
+                localStorage.setItem('registeredUser', username);
+                localStorage.setItem('registeredEmail', email);
+                startPacmanAnimation();
+            });
+
+            canvas.width = 400;
+            canvas.height = 80;
+            canvas.style.display = 'none';
+            initDots();
+
+        })();
+    </script>
+

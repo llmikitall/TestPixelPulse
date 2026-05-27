@@ -1,0 +1,8 @@
+<% @articles.each do |item| %>
+	<div class="news-card">
+		<div class="news-data">📅 <%= item.date.strftime("%d.%m.%Y") %></div>
+		<h3><%= item.title %></h3>
+		<p><%= item.part_content %></p>
+		<%= link_to "Читать далее →", article_item_path(item), class: 'read-more' %>
+	</div>
+<% end %>

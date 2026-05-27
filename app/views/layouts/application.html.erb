@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+    	<%= yield(:page_title) || "RETRO GAME FORUM | Аркадный портал" %>
+    </title>
+    <meta name="viewport" content="width=device-width,initial-scale=1, user-scalable=yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body data-controller="<%= controller_name %>" data-action="<%= action_name %>" >
+    <%= render 'blocks/header' %> 
+    
+    <main>
+      <%= yield %>
+    </main>
+    
+    <%= render 'blocks/footer' %> 
+  </body>
+</html>

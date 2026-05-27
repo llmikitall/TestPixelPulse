@@ -1,0 +1,163 @@
+<% content_for :page_title, "Аркадный портал | Pixel Pulse" %>
+
+<main>
+            <section class="hero">
+                <h2 class="glitch" data-text="ДОБРО ПОЖАЛОВАТЬ В RETRO GAME FORUM!">ДОБРО ПОЖАЛОВАТЬ В RETRO GAME FORUM!</h2>
+
+                <div class="arcade-cabinet">
+                    <div class="cabinet-top"></div>
+                    <div class="cabinet-screen">
+                        <div class="game-preview">
+                            <div class="pacman-game">
+                                <div class="pacman-character"></div>
+                                <div class="ghost-character red-ghost"></div>
+                                <div class="ghost-character pink-ghost"></div>
+                                <div class="ghost-character cyan-ghost"></div>
+                                <div class="ghost-character orange-ghost"></div>
+                                <div class="dot-row">
+                                    <span class="game-dot"></span><span class="game-dot"></span><span class="game-dot"></span><span class="game-dot"></span><span class="game-dot"></span>
+                                    <span class="game-dot"></span><span class="game-dot"></span><span class="game-dot"></span><span class="game-dot"></span><span class="game-dot"></span>
+                                </div>
+                            </div>
+                            <div class="screen-glow"></div>
+                        </div>
+                    </div>
+                    <div class="cabinet-controls">
+                        <div class="joystick"></div>
+                        <div class="button red" id="redBtn"></div>
+                        <div class="button blue" id="blueBtn"></div>
+                        <div class="button yellow" id="yellowBtn"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="features">
+                <h2 class="section-title blink">РАЗДЕЛЫ ФОРУМА:</h2>
+                <div class="features-grid">
+                    <div class="feature-card" data-demo="news">
+                        <span class="card-icon">📰</span>
+                        <h3>НОВОСТИ</h3>
+                        <p>Свежие новости игровой индустрии</p>
+                        <span class="enter-btn">ПЕРЕЙТИ →</span>
+                    </div>
+                    <div class="feature-card" data-demo="reviews">
+                        <span class="card-icon">🎮</span>
+                        <h3>ОБЗОРЫ</h3>
+                        <p>Обзоры классических и новых игр</p>
+                        <span class="enter-btn">ПЕРЕЙТИ →</span>
+                    </div>
+                    <div class="feature-card" data-demo="forum">
+                        <span class="card-icon">💬</span>
+                        <h3>ФОРУМ</h3>
+                        <p>Обсуждения, секреты, советы</p>
+                        <span class="enter-btn">ПЕРЕЙТИ →</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="highscores">
+                <div class="scoreboard">
+                    <h3>⭐ ТОП ИГР НЕДЕЛИ ⭐</h3>
+                    <div class="score-row"><span>1. ELDEN RING</span><span>⭐ 4.8</span></div>
+                    <div class="score-row"><span>2. STARFIELD</span><span>⭐ 4.5</span></div>
+                    <div class="score-row"><span>3. ZELDA: TOTK</span><span>⭐ 4.9</span></div>
+                    <div class="score-row"><span>4. BALDUR'S GATE 3</span><span>⭐ 4.7</span></div>
+                    <div class="score-row"><span>5. CYBERPUNK 2077</span><span>⭐ 4.3</span></div>
+                </div>
+            </section>
+
+            <section class="latest-discussions">
+                <h2 class="section-title">🔥 АКТИВНЫЕ ТЕМЫ</h2>
+                <div class="topics-grid">
+                    <div class="topic-item"><span class="topic-icon">💬</span><div class="topic-info"><h4>Лучшие RPG последних лет</h4><p>Ответов: 42 • Последний: 5 мин назад</p></div></div>
+                    <div class="topic-item"><span class="topic-icon">💬</span><div class="topic-info"><h4>Секреты в Starfield</h4><p>Ответов: 27 • Последний: 15 мин назад</p></div></div>
+                    <div class="topic-item"><span class="topic-icon">💬</span><div class="topic-info"><h4>Ностальгия: игры на PS1</h4><p>Ответов: 156 • Последний: 1 час назад</p></div></div>
+                </div>
+            </section>
+
+
+<script type="module">
+    // ========== УПРАВЛЕНИЕ ПРИЗРАКАМИ (кнопки на аркадном автомате) ==========
+    const redBtn = document.getElementById('redBtn');
+    const blueBtn = document.getElementById('blueBtn');
+    const yellowBtn = document.getElementById('yellowBtn');
+
+    const redGhostEl = document.querySelector('.red-ghost');
+    const cyanGhostEl = document.querySelector('.cyan-ghost');
+    const orangeGhostEl = document.querySelector('.orange-ghost');
+
+    // состояния видимости
+    let redVisible = true;
+    let cyanVisible = true;
+    let orangeVisible = true;
+
+    // Универсальная функция с анимацией распада
+    function initGhostToggle(button, ghost, visibilityFlag) {
+        if(!button || !ghost) return;
+        button.addEventListener('click', () => {
+            if(visibilityFlag) {
+                // Исчезаем с пиксельной магией
+                ghost.classList.add('dissolve');
+                setTimeout(() => {
+                    ghost.style.display = 'none';
+                    ghost.classList.remove('dissolve');
+                }, 500);
+                visibilityFlag = false;
+            } else {
+                // Появление обратно
+                ghost.style.display = 'block';
+                visibilityFlag = true;
+            }
+        });
+    }
+
+    // Инициализация кнопок
+    initGhostToggle(redBtn, redGhostEl, (() => { let v = true; return () => v; })(), (val) => { redVisible = val; });
+    // Немного подправим, чтобы работало через замыкание правильно:
+    // Перепишем чисто:
+    const redState = { val: true };
+    const cyanState = { val: true };
+    const orangeState = { val: true };
+
+    if(redBtn && redGhostEl) {
+        redBtn.addEventListener('click', () => {
+            if(redState.val) {
+                redGhostEl.classList.add('dissolve');
+                setTimeout(() => { redGhostEl.style.display = 'none'; redGhostEl.classList.remove('dissolve'); }, 500);
+                redState.val = false;
+            } else {
+                redGhostEl.style.display = 'block';
+                redState.val = true;
+            }
+        });
+    }
+    if(blueBtn && cyanGhostEl) {
+        blueBtn.addEventListener('click', () => {
+            if(cyanState.val) {
+                cyanGhostEl.classList.add('dissolve');
+                setTimeout(() => { cyanGhostEl.style.display = 'none'; cyanGhostEl.classList.remove('dissolve'); }, 500);
+                cyanState.val = false;
+            } else {
+                cyanGhostEl.style.display = 'block';
+                cyanState.val = true;
+            }
+        });
+    }
+    if(yellowBtn && orangeGhostEl) {
+        yellowBtn.addEventListener('click', () => {
+            if(orangeState.val) {
+                orangeGhostEl.classList.add('dissolve');
+                setTimeout(() => { orangeGhostEl.style.display = 'none'; orangeGhostEl.classList.remove('dissolve'); }, 500);
+                orangeState.val = false;
+            } else {
+                orangeGhostEl.style.display = 'block';
+                orangeState.val = true;
+            }
+        });
+    }
+
+    // Небольшой фикс: начальное отображение всех призраков
+    if(redGhostEl) redGhostEl.style.display = 'block';
+    if(cyanGhostEl) cyanGhostEl.style.display = 'block';
+    if(orangeGhostEl) orangeGhostEl.style.display = 'block';
+</script>
